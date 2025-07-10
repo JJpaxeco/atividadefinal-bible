@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "443997040396",
+    "project_id": "atividadefinal-bible",
+    "storage_bucket": "atividadefinal-bible.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:443997040396:android:067e4de6ea23a46b5c2329",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN0eRW-UGwOeEtys0NvWK0t9sD8Perlpw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
