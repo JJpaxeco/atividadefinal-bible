@@ -186,6 +186,14 @@ class HomePageState extends State<HomePage> {
           ),
           actions: [
             IconButton(
+              icon: Icon(appState.themeMode == ThemeMode.light
+                  ? Icons.dark_mode
+                  : Icons.light_mode),
+              onPressed: () {
+                appState.toggleTheme();
+              },
+            ),
+            IconButton(
               icon: const Icon(Icons.library_books),
               onPressed: () {
                 Navigator.of(context).push(

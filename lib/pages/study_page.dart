@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/app_state.dart';
+import 'package:provider/provider.dart';
 import '../models/study_model.dart';
 import '../services/openai_service.dart';
 import '../services/firestore_service.dart';
@@ -78,8 +80,22 @@ class StudyPageState extends State<StudyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Estudo do Versículo')),
+      appBar: AppBar(
+        title: const Text('Estudo do Versículo'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(appState.themeMode == ThemeMode.light
+                ? Icons.dark_mode
+                : Icons.light_mode),
+            onPressed: () {
+              appState.toggleTheme();
+            },
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _study == null
@@ -88,9 +104,9 @@ class StudyPageState extends State<StudyPage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(24.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
                             _study!.verse,
@@ -99,16 +115,15 @@ class StudyPageState extends State<StudyPage> {
                               fontSize: 18,
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          Text(_study!.studyText),
+                          const SizedBox(height: 16),
+                          Text(_study!.studyText,
+                              style: const TextStyle(fontSize: 16)),
                           const SizedBox(height: 20),
                           _isSaving
                               ? const Center(child: CircularProgressIndicator())
-                              : Center(
-                                  child: ElevatedButton(
-                                    onPressed: _saveStudy,
-                                    child: const Text('Salvar Estudo'),
-                                  ),
+                              : ElevatedButton(
+                                  onPressed: _saveStudy,
+                                  child: const Text('Salvar Estudo'),
                                 ),
                         ],
                       ),

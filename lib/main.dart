@@ -29,25 +29,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<AuthService>(
-          create: (_) => AuthService(),
-        ),
-        StreamProvider(
-          create: (context) => context.read<AuthService>().user,
-          initialData: null,
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Diário de Estudos Bíblicos + IA',
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        home: const AuthWrapper(),
-      ),
+    return Consumer<AppState>(
+      builder: (context, appState, child) {
+        return MultiProvider(
+          providers: [
+            Provider<AuthService>(
+              create: (_) => AuthService(),
+            ),
+            StreamProvider(
+              create: (context) => context.read<AuthService>().user,
+              initialData: null,
+            ),
+          ],
+          child: MaterialApp(
+            title: 'Diário de Estudos Bíblicos + IA',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: appState.themeMode,
+            debugShowCheckedModeBanner: false,
+            home: const AuthWrapper(),
+          ),
+        );
+      },
     );
-  }
-}
+  }}
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});

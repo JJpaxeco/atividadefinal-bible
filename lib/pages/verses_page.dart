@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/app_state.dart';
 import 'package:myapp/models/verse_model.dart';
 import 'package:myapp/pages/study_page.dart';
 import 'package:myapp/services/bible_api_service.dart';
+import 'package:provider/provider.dart';
 
 class VersesPage extends StatefulWidget {
   final String bibleRef;
@@ -55,9 +57,20 @@ class VersesPageState extends State<VersesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.bookRef} ${widget.chapter}'),
+        actions: [
+          IconButton(
+            icon: Icon(appState.themeMode == ThemeMode.light
+                ? Icons.dark_mode
+                : Icons.light_mode),
+            onPressed: () {
+              appState.toggleTheme();
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

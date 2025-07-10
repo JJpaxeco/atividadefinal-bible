@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/app_state.dart';
 import 'package:myapp/pages/webview_page.dart';
+import 'package:provider/provider.dart';
 import '../models/study_model.dart';
 import '../services/firestore_service.dart';
 
@@ -18,8 +20,22 @@ class LibraryPageState extends State<LibraryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Biblioteca de Estudos')),
+      appBar: AppBar(
+        title: const Text('Biblioteca de Estudos'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(appState.themeMode == ThemeMode.light
+                ? Icons.dark_mode
+                : Icons.light_mode),
+            onPressed: () {
+              appState.toggleTheme();
+            },
+          ),
+        ],
+      ),
       body: _uid == null
           ? const Center(child: Text('Usuário não autenticado.'))
           : StreamBuilder<List<StudyModel>>(
@@ -35,25 +51,30 @@ class LibraryPageState extends State<LibraryPage> {
                   return const Center(child: Text('Nenhum estudo salvo.'));
                 }
 
-                final studies = snapshot.data;
+                final studies = snapshot.data!;
 
                 return ListView.builder(
-                  itemCount: studies!.length,
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: studies.length,
                   itemBuilder: (context, index) {
                     final study = studies[index];
-                    return ListTile(
-                      title: Text(study.verse),
-                      subtitle: Text(
-                        DateFormat('dd/MM/yyyy HH:mm')
-                            .format(study.createdAt.toDate()),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ListTile(
+                        title: Text(study.verse,
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(
+                          DateFormat('dd/MM/yyyy HH:mm')
+                              .format(study.createdAt.toDate()),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => StudyDetailPage(study: study),
+                            ),
+                          );
+                        },
                       ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => StudyDetailPage(study: study),
-                          ),
-                        );
-                      },
                     );
                   },
                 );
@@ -70,6 +91,7 @@ class StudyDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     final urlRegex = RegExp(r'https?:\/\/[^\s\)]+');
     final urls =
         urlRegex.allMatches(study.studyText).map((m) => m.group(0)!).toList();
@@ -79,6 +101,14 @@ class StudyDetailPage extends StatelessWidget {
         title: const Text('Detalhes do Estudo'),
         actions: [
           IconButton(
+            icon: Icon(appState.themeMode == ThemeMode.light
+                ? Icons.dark_mode
+                : Icons.light_mode),
+            onPressed: () {
+              appState.toggleTheme();
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () => _showDeleteConfirmation(context),
           ),
@@ -86,29 +116,35 @@ class StudyDetailPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              study.verse,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  study.verse,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 16),
+                Text(study.studyText, style: const TextStyle(fontSize: 16)),
+                if (urls.isNotEmpty) ...[
+                  const SizedBox(height: 20),
+                  ...urls.map((url) => ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => WebViewPage(url: url),
+                            ),
+                          );
+                        },
+                        child: Text('Abrir: ${url.split('/').last}'),
+                      ))
+                ]
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(study.studyText),
-            if (urls.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              ...urls.map((url) => ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => WebViewPage(url: url),
-                        ),
-                      );
-                    },
-                    child: Text('Abrir: ${url.split('/').last}'),
-                  ))
-            ]
-          ],
+          ),
         ),
       ),
     );
@@ -119,6 +155,7 @@ class StudyDetailPage extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Text('Confirmar Exclusão'),
           content: const Text('Tem certeza de que deseja excluir este estudo?'),
           actions: <Widget>[
@@ -129,7 +166,7 @@ class StudyDetailPage extends StatelessWidget {
               },
             ),
             TextButton(
-              child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+              child: Text('Excluir', style: TextStyle(color: Colors.red)),
               onPressed: () {
                 _deleteStudy(dialogContext);
               },

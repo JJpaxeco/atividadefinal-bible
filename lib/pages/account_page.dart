@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/app_state.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../utils/utils.dart';
 import 'login_page.dart';
@@ -90,72 +92,92 @@ class AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Minha Conta'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(appState.themeMode == ThemeMode.light
+                ? Icons.dark_mode
+                : Icons.light_mode),
+            onPressed: () {
+              appState.toggleTheme();
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(labelText: 'E-mail'),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || !value.contains('@')) {
-                          return 'Por favor, insira um e-mail válido.';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) => setState(() {}),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: (_emailController.text !=
-                              FirebaseAuth.instance.currentUser?.email)
-                          ? _updateEmail
-                          : null,
-                      child: const Text('Alterar E-mail'),
-                    ),
-                    const SizedBox(height: 24),
-                    const Divider(),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration:
-                          const InputDecoration(labelText: 'Senha Atual'),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _newPasswordController,
-                      decoration:
-                          const InputDecoration(labelText: 'Nova Senha'),
-                      obscureText: true,
-                      validator: validatePassword,
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: _updatePassword,
-                      child: const Text('Alterar Senha'),
-                    ),
-                    const SizedBox(height: 24),
-                    const Divider(),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _logout,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+          : Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            controller: _emailController,
+                            decoration:
+                                const InputDecoration(labelText: 'E-mail'),
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) {
+                              if (value == null || !value.contains('@')) {
+                                return 'Por favor, insira um e-mail válido.';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) => setState(() {}),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: (_emailController.text !=
+                                    FirebaseAuth.instance.currentUser?.email)
+                                ? _updateEmail
+                                : null,
+                            child: const Text('Alterar E-mail'),
+                          ),
+                          const SizedBox(height: 24),
+                          const Divider(),
+                          const SizedBox(height: 24),
+                          TextFormField(
+                            controller: _passwordController,
+                            decoration: const InputDecoration(
+                                labelText: 'Senha Atual'),
+                            obscureText: true,
+                          ),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _newPasswordController,
+                            decoration:
+                                const InputDecoration(labelText: 'Nova Senha'),
+                            obscureText: true,
+                            validator: validatePassword,
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: _updatePassword,
+                            child: const Text('Alterar Senha'),
+                          ),
+                          const SizedBox(height: 24),
+                          const Divider(),
+                          const SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: _logout,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            child: const Text('Sair'),
+                          ),
+                        ],
                       ),
-                      child: const Text('Sair'),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
