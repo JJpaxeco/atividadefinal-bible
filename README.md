@@ -32,8 +32,8 @@ Um aplicativo Flutter que funciona como **diário de estudos bíblicos**. Ele 
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/SEU-USUARIO/SEU-PROJETO.git
-cd SEU-PROJETO
+git clone https://github.com/JJpaxeco/atividadefinal-bible.git
+cd atividadefinal-bible
 
 # 2. Instale as dependências
 flutter pub get
@@ -96,17 +96,6 @@ firestore.rules                # Regras de segurança
 pubspec.yaml                   # Dependências e assets
 README.md
 ```
-
----
-
-## 📱 Imagens do App (Screenshots)
-
-| Tela                  | Imagem            |
-| --------------------- | ----------------- |
-| Login                 | `Img/login.png`   |
-| Navegação Bíblica     | `Img/bible.png`   |
-| Estudo Gerado         | `Img/study.png`   |
-| Biblioteca de Estudos | `Img/library.png` |
 
 ---
 
